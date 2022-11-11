@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import ru.yandex.practicum.filmorate.enums.Search;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
@@ -24,19 +25,12 @@ public class FilmService {
     }
 
     public Film addFilm(Film film) throws ResponseStatusException {
-        if (film.getReleaseDate().isBefore(minDate)) {
-            log.warn("Дата релиза не может быть раньше 28.12.1895\nТекущая дата релиза: " + film.getReleaseDate());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Дата релиза не может быть раньше 28.12.1895");
-        }
-
+        validationDate(film);
         return films.add(film);
     }
 
     public Film updateFilm(Film film) throws ResponseStatusException {
-        if (film.getReleaseDate().isBefore(minDate)) {
-            log.warn("Дата релиза не может быть раньше 28.12.1895\nТекущая дата релиза: " + film.getReleaseDate());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Дата релиза не может быть раньше 28.12.1895");
-        }
+        validationDate(film);
         log.info("Фильм {} обновлен", film);
         return films.update(film);
     }
@@ -52,19 +46,13 @@ public class FilmService {
     }
 
     public void addLike(Integer userId, Integer filmId) throws ResponseStatusException {
-        if (userId <=0 || filmId <= 0) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "id и filmId не могут быть отрицательныи либо равены 0");
-        }
+        validateUserIdAndFilmId(userId, filmId);
         films.addLike(userId, filmId);
         log.info("Пользователь c id = " + userId + " поставил лайк фильму c id = " + filmId);
     }
 
     public void deleteLike(Integer userId, Integer filmId) throws ResponseStatusException {
-        if (userId <=0 || filmId <= 0) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "id и filmId не могут быть отрицательныи либо равены 0");
-        }
+        validateUserIdAndFilmId(userId, filmId);
         films.deleteLike(userId, filmId);
         log.info("Пользователь c id=" + userId + " удалил лайк с фильма id= " + filmId);
     }
@@ -82,9 +70,7 @@ public class FilmService {
     }
 
     public Film getFilm(Integer filmId) {
-        if (filmId <= 0) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "id не может быть отрицательным либо равен 0");
-        }
+        validateFilm(filmId);
         return films.getFilm(filmId);
     }
 
@@ -97,17 +83,15 @@ public class FilmService {
     }
 
     public void deleteFilm(Integer filmId) {
-        if (filmId <= 0) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "id не может быть отрицательным либо равен 0");
-        }
+        validateFilm(filmId);
         films.delete(filmId);
         log.info("Фильм с id=" + filmId + " удален");
     }
 
-    public List<Film> searchFilms(String query, String by) {
+    public List<Film> searchFilms(String query, Search by) {
         String str = query.toLowerCase();
         List <Film> filmList;
-        switch (by) {
+        switch (by.toString()) {
             case "title,director" :
             case "director,title" :
                 filmList = films.getFilmByTitleDirector(str);
@@ -123,6 +107,25 @@ public class FilmService {
                 return filmList;
             default:
                 return films.getFilmsList();
+        }
+    }
+
+    private void validationDate(Film film) {
+        if (film.getReleaseDate().isBefore(minDate)) {
+            log.warn("Дата релиза не может быть раньше 28.12.1895\nТекущая дата релиза: " + film.getReleaseDate());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Дата релиза не может быть раньше 28.12.1895");
+        }
+    }
+
+    private void validateUserIdAndFilmId(Integer userId, Integer filmId) {
+        if (userId <=0 || filmId <= 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "id и filmId не могут быть отрицательныи либо равены 0");
+        }
+    }
+    private void validateFilm(Integer filmId) {
+        if (filmId <= 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "id не может быть отрицательным либо равен 0");
         }
     }
 }
