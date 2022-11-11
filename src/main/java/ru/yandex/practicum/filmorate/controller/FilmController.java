@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.enums.Search;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
@@ -75,7 +76,7 @@ public class FilmController {
     @GetMapping("/search")
     public List<Film> searchFilms(
             @RequestParam(value = "query", required = false) String query,
-            @RequestParam(value = "by", required = false) String by) {
+            @RequestParam(value = "by", required = false) Search by) {
         return filmService.searchFilms(query, by);
     }
 }
