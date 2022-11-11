@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -84,7 +85,12 @@ public class FilmDbStorage implements FilmStorage {
             String sqlQuery2 = "DELETE FROM director_films WHERE film_id = ?";
             jdbcTemplate.update(sqlQuery2, film.getId());
             String sqlQuery3 = "INSERT INTO director_films (film_id, director_id) VALUES (?, ?)";
-            film.getDirectors().forEach(director -> jdbcTemplate.update(sqlQuery3, film.getId(), director.getId()));
+            try {
+                film.getDirectors().forEach(director -> jdbcTemplate.update(sqlQuery3, film.getId(), director.getId()));
+            } catch (DataIntegrityViolationException e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST
+                        , "Невозможно добавить одного и того же режисера к фильму дважды" );
+            }
         }
         return getFilm(film.getId());
     }
