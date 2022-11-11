@@ -26,10 +26,7 @@ public class DirectorService {
     }
 
     public Director getDirector(Integer directorId) {
-        if (directorId <= 0) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "id не может быть отрицательным либо равен 0");
-        }
+        validateDirectorId(directorId);
         return  directors.getDirector(directorId);
     }
 
@@ -44,10 +41,14 @@ public class DirectorService {
     }
 
     public void delete(Integer directorId) {
-            if (directorId <= 0) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "id не может быть отрицательным либо равен 0");
-            }
-            directors.delete(directorId);
-            log.info("Режиссер с id=" + directorId + " удален");
+        validateDirectorId(directorId);
+        directors.delete(directorId);
+        log.info("Режиссер с id=" + directorId + " удален");
+    }
+
+    private void validateDirectorId(Integer directorId) {
+        if (directorId <= 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "id не может быть отрицательным либо равен 0");
+        }
     }
 }

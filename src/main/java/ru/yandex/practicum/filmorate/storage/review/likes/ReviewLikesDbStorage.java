@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.review.likes;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -32,7 +33,11 @@ public class ReviewLikesDbStorage implements ReviewLikesStorage {
         }
         String sql = "INSERT INTO REVIEW_LIKES (REVIEW_ID, PERSON_ID, IS_POSITIVE) " +
                 "VALUES (?, ?, ?)";
-        jdbcTemplate.update(sql, reviewId, userId, is_positive);
+        try {
+            jdbcTemplate.update(sql, reviewId, userId, is_positive);
+        } catch (DuplicateKeyException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Нельзя оценить дважды один и тот же отзыв");
+        }
     }
 
     @Override

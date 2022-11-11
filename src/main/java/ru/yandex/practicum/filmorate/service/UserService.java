@@ -26,18 +26,12 @@ public class UserService {
     private final FilmStorage films;
 
     public User addUser(User user) throws ResponseStatusException {
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-            log.debug("Имя пользователя пустое. Был использован логин");
-        }
+        checkUserName(user);
         return users.add(user);
     }
 
     public User updateUser(User user) throws ResponseStatusException {
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-            log.debug("Имя пользователя пустое. Был использован логин");
-        }
+        checkUserName(user);
         users.update(user);
         log.info("Пользователь {} сохранен", user);
         return user;
@@ -54,19 +48,13 @@ public class UserService {
     }
 
     public void addFriend(Integer userId, Integer friendId) throws ResponseStatusException {
-        if (userId <= 0 || friendId <= 0) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "id и friendId не могут быть отрицательныи либо равены 0");
-        }
+        validateUserAndFriend(userId,friendId);
         users.addFriend(userId, friendId);
         log.info("Пользователь с id=" + userId + " добавил в друзья пользователя с id= " + friendId);
     }
 
     public void deleteFriend(Integer userId, Integer friendId) throws ResponseStatusException {
-        if (userId <= 0 || friendId <= 0) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "id и friendId не могут быть отрицательныи либо равены 0");
-        }
+        validateUserAndFriend(userId,friendId);
         if (userId.equals(friendId)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Невозможно удалить из друзей самого себя");
         }
@@ -75,10 +63,7 @@ public class UserService {
     }
 
     public List<User> getCommonFriends(Integer userId, Integer friendId) throws ResponseStatusException {
-        if (userId <= 0 || friendId <= 0) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "id и friendId не могут быть отрицательныи либо равены 0");
-        }
+        validateUserAndFriend(userId,friendId);
         if (userId.equals(friendId)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Невозможно запросить общих друзей самого себя");
         }
@@ -86,33 +71,25 @@ public class UserService {
     }
 
     public List<User> getFriends(Integer friendId) throws ResponseStatusException {
-
-        if (friendId <= 0) {
+        if (friendId <=0 ) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "id не может быть отрицательным либо равен 0");
         }
-
         return users.getFriends(friendId);
     }
 
     public User getUser(Integer userId) {
-        if (userId <= 0) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "id не может быть отрицательным либо равен 0");
-        }
+        validateUser(userId);
         return users.getUser(userId);
     }
 
     public void delete(Integer userId) {
-        if (userId <= 0) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "id не может быть отрицательным либо равен 0");
-        }
+        validateUser(userId);
         users.delete(userId);
         log.info("Пользователь с id=" + userId + " удален");
     }
 
     public List<Film> getRecommendations(Integer userId) {
-        if (userId <= 0) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "id не может быть отрицательным либо равен 0");
-        }
+        validateUser(userId);
         List<Film> allLikedFilms = films.getLikedFilms();
         List<Film> userLikes;
         Map<Integer, List<Film>> usersAndLikes = new HashMap<>();
@@ -159,5 +136,25 @@ public class UserService {
             return new ArrayList<>();
         }
         return usersAndLikes.get(id).stream().filter(film -> !userLikes.contains(film)).collect(Collectors.toList());
+    }
+
+    private void validateUserAndFriend(Integer userId, Integer friendId) {
+        if (userId <=0 || friendId <= 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "id и friendId не могут быть отрицательныи либо равены 0");
+        }
+    }
+
+    private void checkUserName(User user) {
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+            log.debug("Имя пользователя пустое. Был использован логин");
+        }
+    }
+
+    private void validateUser(Integer userId) {
+        if (userId <= 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "id не может быть отрицательным либо равен 0");
+        }
     }
 }
