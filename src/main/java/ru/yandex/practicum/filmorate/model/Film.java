@@ -24,7 +24,6 @@ public class Film {
     private final Set<Genre> genres = new TreeSet<>();
     @EqualsAndHashCode.Exclude
     private final Set<Director> directors = new HashSet<>();
-    @EqualsAndHashCode.Exclude
     @NotNull
     private Mpa mpa;
 

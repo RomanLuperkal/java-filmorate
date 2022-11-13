@@ -9,6 +9,6 @@ import ru.yandex.practicum.filmorate.model.Director;
 public interface DirectorMapper {
     DirectorMapper mapper = Mappers.getMapper(DirectorMapper.class);
 
-    Director toDirector(DirectorDto directorDto);
-    DirectorDto toDirectorDto(Director director);
+    Director mapToDirector(DirectorDto directorDto);
+    DirectorDto mapToDirectorDto(Director director);
 }

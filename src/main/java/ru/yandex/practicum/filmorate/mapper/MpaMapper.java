@@ -8,6 +8,6 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 @Mapper
 public interface MpaMapper {
     MpaMapper mapper = Mappers.getMapper(MpaMapper.class);
-    Mpa toMpa (MpaDto mpaDto);
-    MpaDto toMpaDto (Mpa mpa);
+    Mpa mapToMpa(MpaDto mpaDto);
+    MpaDto mapToMpaDto(Mpa mpa);
 }

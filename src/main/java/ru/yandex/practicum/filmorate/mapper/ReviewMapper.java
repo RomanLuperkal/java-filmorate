@@ -8,6 +8,6 @@ import ru.yandex.practicum.filmorate.model.Review;
 @Mapper
 public interface ReviewMapper {
     ReviewMapper mapper = Mappers.getMapper(ReviewMapper.class);
-    Review toReview(ReviewDto reviewDto);
-    ReviewDto toReviewDto(Review review);
+    Review mapToReview(ReviewDto reviewDto);
+    ReviewDto mapToReviewDto(Review review);
 }

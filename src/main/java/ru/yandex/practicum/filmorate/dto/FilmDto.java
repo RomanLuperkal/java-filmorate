@@ -1,8 +1,6 @@
 package ru.yandex.practicum.filmorate.dto;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -17,10 +15,10 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
+
 @Data
 @Builder
 public class FilmDto {
-    @EqualsAndHashCode.Exclude
     private Integer id;
     @NotBlank(message = "Название не может быть пустым")
     private String name;
@@ -29,13 +27,9 @@ public class FilmDto {
     private LocalDate releaseDate;
     @Positive(message = "Некорректная продолжительность фильма")
     private Integer duration;
-    @EqualsAndHashCode.Exclude
-    private final Set<User> likes = new HashSet<>();
-    @EqualsAndHashCode.Exclude
+    private  final Set<User> likes = new HashSet<>();
     private final Set<Genre> genres = new TreeSet<>();
-    @EqualsAndHashCode.Exclude
     private final Set<Director> directors = new HashSet<>();
-    @EqualsAndHashCode.Exclude
     @NotNull
     private Mpa mpa;
 }

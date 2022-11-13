@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.dto;
 
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.constraints.Email;
@@ -15,7 +14,6 @@ import java.util.Set;
 @Data
 @Builder
 public class UserDto {
-    @EqualsAndHashCode.Exclude
     private Integer id;
     @Email(message = "некорректный email")
     private String email;

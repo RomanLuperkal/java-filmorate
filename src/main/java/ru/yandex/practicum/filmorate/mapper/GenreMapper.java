@@ -8,6 +8,6 @@ import ru.yandex.practicum.filmorate.model.Genre;
 @Mapper
 public interface GenreMapper {
     GenreMapper mapper = Mappers.getMapper(GenreMapper.class);
-    Genre toGenre(GenreDto genreDto);
-    GenreDto toGenreDto(Genre genre);
+    Genre mapToGenre(GenreDto genreDto);
+    GenreDto mapToGenreDto(Genre genre);
 }
