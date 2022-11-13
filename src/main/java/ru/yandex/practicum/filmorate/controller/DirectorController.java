@@ -20,32 +20,27 @@ public class DirectorController {
     private final DirectorService directorService;
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<List<DirectorDto>> getDirectors() {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(directorService.getDirectorList().stream().map(DirectorMapper.mapper::toDirectorDto)
+                .body(directorService.getDirectorList().stream().map(DirectorMapper.mapper::mapToDirectorDto)
                 .collect(Collectors.toList()));
     }
 
     @GetMapping("{id}")
     public ResponseEntity<DirectorDto> getDirector(@PathVariable("id") Integer directorId) {
-        return ResponseEntity.ok(DirectorMapper.mapper.toDirectorDto(directorService.getDirector(directorId)));
+        return ResponseEntity.ok(DirectorMapper.mapper.mapToDirectorDto(directorService.getDirector(directorId)));
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<DirectorDto> addDirector(@Valid @RequestBody DirectorDto director) {
-        ResponseEntity.status(HttpStatus.CREATED).body(DirectorMapper.mapper.toDirectorDto(DirectorMapper.mapper.toDirector(director)));
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(DirectorMapper.mapper.toDirectorDto(DirectorMapper.mapper.toDirector(director)));
+                .body(DirectorMapper.mapper.mapToDirectorDto(directorService.addDirector(DirectorMapper.mapper.mapToDirector(director))));
     }
 
     @PutMapping
-    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<DirectorDto> updateDirector(@Valid @RequestBody DirectorDto director) {
-        ResponseEntity.status(HttpStatus.OK).body(DirectorMapper.mapper.toDirectorDto(DirectorMapper.mapper.toDirector(director)));
         return ResponseEntity.status(HttpStatus.OK)
-                .body(DirectorMapper.mapper.toDirectorDto(DirectorMapper.mapper.toDirector(director)));
+                .body(DirectorMapper.mapper.mapToDirectorDto(directorService.updateDirector(DirectorMapper.mapper.mapToDirector(director))));
     }
 
     @DeleteMapping("{id}")

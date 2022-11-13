@@ -2,12 +2,16 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.dto.ReviewDto;
+import ru.yandex.practicum.filmorate.mapper.ReviewMapper;
 import ru.yandex.practicum.filmorate.service.ReviewService;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -18,17 +22,21 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @PostMapping
-    public Review addReview(@Valid @RequestBody Review review) {
-        Review addedReview = reviewService.addReview(review);
+    public ResponseEntity<ReviewDto> addReview(@Valid @RequestBody ReviewDto review) {
+        ReviewDto addedReview = ReviewMapper.mapper.mapToReviewDto(
+                reviewService.addReview(ReviewMapper.mapper.mapToReview(review))
+        );
         log.info("Отзыв с id = {} добавлен", addedReview.getReviewId());
-        return addedReview;
+        return ResponseEntity.status(HttpStatus.OK).body(addedReview);
     }
 
     @PutMapping
-    public Review updateReview(@Valid @RequestBody Review review) {
-        Review updatedReview = reviewService.updateReview(review);
+    public ResponseEntity<ReviewDto> updateReview(@Valid @RequestBody ReviewDto review) {
+        ReviewDto updatedReview = ReviewMapper.mapper.mapToReviewDto(
+                reviewService.updateReview(ReviewMapper.mapper.mapToReview(review))
+        );
         log.info("Отзыв с id = {} обновлен", updatedReview.getReviewId());
-        return updatedReview;
+        return ResponseEntity.status(HttpStatus.OK).body(updatedReview);
     }
 
     @DeleteMapping("/{id}")
@@ -38,20 +46,22 @@ public class ReviewController {
     }
 
     @GetMapping("/{id}")
-    public Review getReviewById(@PathVariable("id") Integer reviewId) {
-        Review review = reviewService.getReviewById(reviewId);
+    public ResponseEntity<ReviewDto> getReviewById(@PathVariable("id") Integer reviewId) {
+        ReviewDto review = ReviewMapper.mapper.mapToReviewDto(reviewService.getReviewById(reviewId));
         log.info("Отзыв с id = {} найден", reviewId);
-        return review;
+        return ResponseEntity.status(HttpStatus.OK).body(review);
     }
 
     @GetMapping
-    public List<Review> getReviewsForFilm(@RequestParam(required = false) Integer filmId,
+    public ResponseEntity<List<ReviewDto>> getReviewsForFilm(@RequestParam(required = false) Integer filmId,
                                           @RequestParam(defaultValue = "10") Integer count) {
-        List<Review> reviews = reviewService.getReviewsForFilm(filmId, count);
+
+        List<ReviewDto> reviews = reviewService.getReviewsForFilm(filmId, count).stream()
+                .map(ReviewMapper.mapper::mapToReviewDto).collect(Collectors.toList());
         if (!reviews.isEmpty()) {
             log.info("Количество отзывов {}, id самого полезного отзыва {}", reviews.size(), reviews.get(0).getReviewId());
         }
-        return reviews;
+        return ResponseEntity.status(HttpStatus.OK).body(reviews);
     }
 
     @PutMapping("/{id}/like/{userId}")
