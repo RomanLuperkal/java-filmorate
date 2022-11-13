@@ -27,9 +27,13 @@ public class FilmDto {
     private LocalDate releaseDate;
     @Positive(message = "Некорректная продолжительность фильма")
     private Integer duration;
+    @EqualsAndHashCode.Exclude
     private  final Set<User> likes = new HashSet<>();
+    @EqualsAndHashCode.Exclude
     private final Set<Genre> genres = new TreeSet<>();
+    @EqualsAndHashCode.Exclude
     private final Set<Director> directors = new HashSet<>();
     @NotNull
+    @EqualsAndHashCode.Exclude
     private Mpa mpa;
 }

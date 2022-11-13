@@ -11,6 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
+import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -446,8 +448,8 @@ public class FilmControllerTest {
                 //then
                 .andExpectAll(
                         status().isOk(),
-                        result -> assertEquals(List.of(film1,film2), objectMapper.readValue(result.getResponse().getContentAsString()
-                                , new TypeReference<ArrayList<Film>>(){}), "Фильмы не совпадают")
+                        result -> assertEquals(List.of(FilmMapper.mapToFilmDto(film1),FilmMapper.mapToFilmDto(film2)), objectMapper.readValue(result.getResponse().getContentAsString()
+                                , new TypeReference<ArrayList<FilmDto>>(){}), "Фильмы не совпадают")
                 );
     }
 

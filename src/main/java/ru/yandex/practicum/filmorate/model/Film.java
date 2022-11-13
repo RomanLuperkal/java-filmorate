@@ -25,6 +25,7 @@ public class Film {
     @EqualsAndHashCode.Exclude
     private final Set<Director> directors = new HashSet<>();
     @NotNull
+    @EqualsAndHashCode.Exclude
     private Mpa mpa;
 
     public Map<String, Object> toMap() {
