@@ -3,11 +3,14 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.dto.MpaDto;
+import ru.yandex.practicum.filmorate.mapper.MpaMapper;
 import ru.yandex.practicum.filmorate.service.MpaService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/mpa")
@@ -17,12 +20,13 @@ public class MpaController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<Mpa> getMpasList() {
-        return mpaService.getMpasList();
+    public ResponseEntity<List<MpaDto>> getMpasList() {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(mpaService.getMpasList().stream().map(MpaMapper.mapper::mapToMpaDto).collect(Collectors.toList()));
     }
 
     @GetMapping("{id}")
-    public Mpa getMpa(@PathVariable("id") Integer id) {
-        return mpaService.getMpa(id);
+    public ResponseEntity<MpaDto> getMpa(@PathVariable("id") Integer id) {
+        return ResponseEntity.status(HttpStatus.OK).body(MpaMapper.mapper.mapToMpaDto(mpaService.getMpa(id)));
     }
 }

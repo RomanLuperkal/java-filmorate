@@ -1,15 +1,24 @@
-package ru.yandex.practicum.filmorate.model;
+package ru.yandex.practicum.filmorate.dto;
 
 import lombok.*;
+import ru.yandex.practicum.filmorate.model.Director;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.model.User;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
+
 
 @Data
 @Builder
-public class Film {
-    @EqualsAndHashCode.Exclude
+public class FilmDto {
     private Integer id;
     @NotBlank(message = "Название не может быть пустым")
     private String name;
@@ -19,7 +28,7 @@ public class Film {
     @Positive(message = "Некорректная продолжительность фильма")
     private Integer duration;
     @EqualsAndHashCode.Exclude
-    private final Set<User> likes = new HashSet<>();
+    private  final Set<User> likes = new HashSet<>();
     @EqualsAndHashCode.Exclude
     private final Set<Genre> genres = new TreeSet<>();
     @EqualsAndHashCode.Exclude
@@ -27,14 +36,4 @@ public class Film {
     @NotNull
     @EqualsAndHashCode.Exclude
     private Mpa mpa;
-
-    public Map<String, Object> toMap() {
-        Map<String, Object> values = new HashMap<>();
-        values.put("name", name);
-        values.put("description", description);
-        values.put("release_date", releaseDate);
-        values.put("duration", duration);
-        values.put("mpa", mpa.getId());
-        return values;
-    }
 }

@@ -3,12 +3,19 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.dto.FeedDto;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
+import ru.yandex.practicum.filmorate.dto.UserDto;
+import ru.yandex.practicum.filmorate.mapper.FeedMapper;
+import ru.yandex.practicum.filmorate.mapper.FilmMapper;
+import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
@@ -17,26 +24,26 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public User addUser(@Valid @RequestBody User user) {
-        return userService.addUser(user);
+    public ResponseEntity<UserDto> addUser(@Valid @RequestBody UserDto user) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(UserMapper.mapToUserDto(userService.addUser(UserMapper.mapToUser(user))));
     }
 
     @PutMapping
-    @ResponseStatus(HttpStatus.OK)
-    public User updateUser(@Valid @RequestBody User user) {
-        return userService.updateUser(user);
+    public ResponseEntity<UserDto> updateUser(@Valid @RequestBody UserDto user) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(UserMapper.mapToUserDto(userService.updateUser(UserMapper.mapToUser(user))));
     }
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<User> getUsers() {
-        return userService.getUsers();
+    public ResponseEntity<List<UserDto>> getUsers() {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(userService.getUsers().stream().map(UserMapper::mapToUserDto).collect(Collectors.toList()));
     }
 
     @GetMapping("{id}")
-    public User getUser(@PathVariable("id") Integer userId) {
-        return userService.getUser(userId);
+    public ResponseEntity<UserDto> getUser(@PathVariable("id") Integer userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(UserMapper.mapToUserDto(userService.getUser(userId)));
     }
 
     @PutMapping("{id}/friends/{friendId}")
@@ -50,13 +57,36 @@ public class UserController {
     }
 
     @GetMapping("{id}/friends")
-    public List<User> getUserFriends(@PathVariable("id") Integer userId) {
-
-        return userService.getFriends(userId);
+    public ResponseEntity<List<UserDto>> getUserFriends(@PathVariable("id") Integer userId) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(userService.getFriends(userId).stream().map(UserMapper::mapToUserDto).collect(Collectors.toList()));
     }
 
     @GetMapping("{id}/friends/common/{friendId}")
-    public List<User> getCommonFriends(@PathVariable("id") Integer userId, @PathVariable Integer friendId) {
-        return userService.getCommonFriends(userId, friendId);
+    public ResponseEntity<List<UserDto>> getCommonFriends(@PathVariable("id") Integer userId,
+                                                          @PathVariable Integer friendId) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(userService.getCommonFriends(userId, friendId).stream()
+                        .map(UserMapper::mapToUserDto).collect(Collectors.toList()));
     }
+
+    @DeleteMapping("{id}")
+    public void deleteUser(@PathVariable("id") Integer userId) {
+        userService.delete(userId);
+    }
+
+    @GetMapping("{id}/recommendations")
+    public ResponseEntity<List<FilmDto>> getRecommendation(@PathVariable("id") Integer userId) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(userService.getRecommendations(userId).stream()
+                        .map(FilmMapper::mapToFilmDto).collect(Collectors.toList()));
+    }
+
+    @GetMapping("{id}/feed")
+        public ResponseEntity<List<FeedDto>> getUserFeed(@PathVariable("id") Integer userId){
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(userService.getUserFeed(userId).stream()
+                        .map(FeedMapper.mapper::mapToFeedDto).collect(Collectors.toList()));
+    }
+
 }
