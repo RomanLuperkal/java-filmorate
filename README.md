@@ -24,7 +24,18 @@
 - Просматривать ленту событий по действиям друзей в соц. сети
 - Формировать рекомендации к просмотру фильмов
 
-
 2. ER диаграмма базы данных приложения:
 ![ER_diagram_for_filmorate](/assets/images/filmorate.png)
+
+Инструкция по запуску:
+-
+1. Для запуска приложения необходимо подключиться базе данных H2:
+
+- Connection type: Embedded
+- path: ./db/filmorate.mv.db
+- spring.datasource.username=sa
+- spring.datasource.password=password
+
+2. Для проверки функциональности и работоспособности приложения предусмотрены postman тесты:
+   [filmorate-tests](https://github.com/RomanLuperkal/java-shareit/blob/main/postman/ShareIt-test.json)  
 
